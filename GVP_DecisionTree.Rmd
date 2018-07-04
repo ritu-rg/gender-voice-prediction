@@ -1,0 +1,62 @@
+---
+title: "Gender Voice Prediction - Decision Tree"
+author: "Ritu"
+date: "December 10, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+# 1. Call libraries
+rm(list=ls()) ; gc()
+library(caret)  # For data partition
+library(C50)    # For decision tree modeling
+
+####### Step 1: Read Data ###############
+setwd("C:\\Users\\Ritu\\Documents\\Learning\\EL\\11-18-19\\Exercises")
+dir()
+gvp<-read.csv("voice.csv", header=TRUE)
+
+
+# 2. Look at data
+dim(gvp)
+str(gvp)
+View(gvp)
+
+
+####### Step 2: Partition data in 80:20 #############3
+# 3. Get row numbers for 80% data
+gvpIndex<-createDataPartition(gvp$label, p = 0.8, list=F)   # 80:20 data partition
+gvpIndex     # List of row numbers to extract from gvp
+
+# 4. Get 80% rows
+train<-gvp[gvpIndex, ]           # 80% train data
+valid<-gvp[-gvpIndex,]           # Rest 20% validation data
+
+########## Step 3: Create model from train data ###########
+# 5. Create decision tree model. 
+#    We use DEFAULT parameter values
+
+model<-C5.0(label ~., data = train )   # Decision tree model, simple
+model
+
+
+# 5.1 Attribute usage gives variable importance
+summary(model)         
+
+######### Step 4: Make predictions of validation dataset #########
+
+# 5. Make prediction and check accuracy
+result<-predict(model, valid[,-21])     # 21st column is held back. It is label
+
+# 5.1 So what is the accuracy"
+(accuracy<-sum(result == valid$label)/nrow(valid))        # decision tree Accuracy
+
+#############################
+
+```
+
